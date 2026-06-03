@@ -9,7 +9,6 @@ import (
 
 	"github.com/adrg/xdg"
 	"github.com/jaimecabrito01/separador-arquivos-service/entities"
-	"github.com/jaimecabrito01/separador-arquivos-service/internal/organizer"
 )
 
 func getUserInput(prompt string, defaultValue string) string {
@@ -75,14 +74,4 @@ func Init() {
 		Documents: paths["Documents"],
 	}
 	entities.NewConfig(&pat)
-
-	fmt.Println("\n>>> Organizando arquivos existentes...")
-	organizer.OrganizeExisting(
-		paths["Downloads"],
-		paths["Musics"],
-		paths["Videos"],
-		paths["Documents"],
-		paths["Images"],
-	)
-	fmt.Println(">>> Organização concluída!")
 }
