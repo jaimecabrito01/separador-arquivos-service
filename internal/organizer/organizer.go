@@ -6,6 +6,9 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"github.com/jaimecabrito01/separador-arquivos-service/entities"
 )
 
 func LoadConfig() (string, string, string, string, string, error) {
@@ -71,4 +74,48 @@ func Move(srcPath string, destDir string) {
 	}
 
 	fmt.Println("Movido para:", destPath)
+}
+
+func OrganizeExisting(downloads, musics, videos, documents, images string) {
+	entries, err := os.ReadDir(downloads)
+	if err != nil {
+		fmt.Printf("Erro ao ler diretório %s: %v\n", downloads, err)
+		return
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+
+		name := entry.Name()
+		if strings.HasSuffix(name, ".crdownload") ||
+			strings.HasSuffix(name, ".part") {
+			continue
+		}
+
+		srcPath := filepath.Join(downloads, name)
+		ext := filepath.Ext(name)
+
+		for _, e := range entities.VideoExtensions {
+			if ext == string(e) {
+				Move(srcPath, videos)
+			}
+		}
+		for _, e := range entities.DocumentExtensions {
+			if ext == string(e) {
+				Move(srcPath, documents)
+			}
+		}
+		for _, e := range entities.MusicExtensions {
+			if ext == string(e) {
+				Move(srcPath, musics)
+			}
+		}
+		for _, e := range entities.ImageExtensions {
+			if ext == string(e) {
+				Move(srcPath, images)
+			}
+		}
+	}
 }
