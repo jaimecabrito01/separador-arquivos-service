@@ -7,11 +7,11 @@ SERVICE_FILE="/etc/systemd/system/$SERVICE_NAME.service"
 
 echo ">>> Instalando $SERVICE_NAME ..."
 
+echo ">>> Compilando binário..."
+go build -o $BINARY_NAME ./cmd/daemon/
+
 echo ">>> Movendo binário para $INSTALL_DIR..."
 sudo mv $BINARY_NAME $INSTALL_DIR/
-
-echo ">>> Copiando config.json..."
-sudo mkdir -p /etc/$SERVICE_NAME
 
 echo ">>> Criando service systemd..."
 sudo bash -c "cat > $SERVICE_FILE" <<EOF
@@ -23,7 +23,6 @@ After=network.target
 ExecStart=$INSTALL_DIR/$BINARY_NAME
 Restart=always
 User=$USER
-WorkingDirectory=/etc/$SERVICE_NAME
 StandardOutput=journal
 StandardError=journal
 
@@ -37,10 +36,12 @@ sudo systemctl daemon-reload
 echo ">>> Ativando serviço..."
 sudo systemctl enable $SERVICE_NAME
 
+echo ">>> Executando configuração inicial..."
+$INSTALL_DIR/$BINARY_NAME --setup
+
 echo ">>> Iniciando $SERVICE_NAME..."
 sudo systemctl start $SERVICE_NAME
 
 echo ">>> Instalação concluída!"
 echo "Status do serviço:"
 systemctl status $SERVICE_NAME --no-pager
-filemover --setup
