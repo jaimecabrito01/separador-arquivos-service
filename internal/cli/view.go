@@ -1,4 +1,4 @@
-package tela
+package cli
 
 import (
 	"bufio"

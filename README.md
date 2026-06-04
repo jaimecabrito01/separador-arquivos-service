@@ -1,68 +1,66 @@
-# FileMover Version 1.0.0
+# FileMover
 
-Um movimentador de arquivos que organiza seus downloads.
-- Pega qualquer arquivo novo na pasta de downloads e move para outra de acordo com seu tipo
-  Ex: se for .mp4 -> /Videos
+Um daemon que monitora sua pasta de downloads e move arquivos novos para pastas separadas por tipo (Vídeos, Músicas, Imagens, Documentos).
 
+## Pré-requisitos
 
-## Índice
-
-- [Instalação](#instalação)
-- [Uso](#uso)
-- [Configuração](#configuração)
-- [Contribuição](#contribuição)
-- [Licença](#licença)
-- [Autores](#autores)
+- Go 1.25 ou superior ([download](https://go.dev/dl/))
 
 ## Instalação
-
-Clone o repositório:
 
 ```bash
 git clone https://github.com/jaimecabrito01/file-mover.git
 cd file-mover
-```
-
-Instale:
-
-```bash
-chmod +x install.sh 
+chmod +x install.sh
 ./install.sh
 ```
 
+O script compila o binário, instala como serviço do systemd e inicia o daemon.
+
 Para desinstalar:
+
 ```bash
-chmod +x uninstall.sh  
+chmod +x uninstall.sh
 ./uninstall.sh
 ```
-
 
 ## Uso
 
 ```bash
-filemover --setup
+filemover --setup    # Configura os caminhos (interativo)
+filemover --now      # Organiza arquivos já existentes na pasta de origem
+filemover            # Inicia o daemon (monitora novos arquivos)
 ```
 
+Na primeira execução, rode `--setup` para definir a pasta de origem (ex: Downloads) e as pastas de destino para cada tipo de arquivo.
+
+Use `--now` para uma organização única dos arquivos que já estão na pasta de origem — útil após a configuração inicial.
+
+Sem flags, o programa inicia o daemon em background e passa a monitorar a pasta configurada.
+
+## Daemon (systemd)
+
+```bash
+sudo systemctl status filemover   # status do serviço
+sudo journalctl -u filemover -f   # logs em tempo real
+sudo systemctl stop filemover     # parar o daemon
+sudo systemctl disable filemover  # remover da inicialização
+```
 
 ## Configuração
 
- ainda nao tem.
+O arquivo de configuração fica em `~/.config/filemover/config.json`:
 
-## Contribuição
-
-Contribuições são bem-vindas! Para contribuir, siga os passos:
-
-1. Fork o projeto
-2. Crie uma branch (`git checkout -b feature/NomeDaFeature`)
-3. Faça commit das suas alterações (`git commit -am 'Adiciona uma nova feature'`)
-4. Envie para o branch (`git push origin feature/NomeDaFeature`)
-5. Abra um Pull Request
+```json
+{
+  "download": "/home/user/Downloads",
+  "images": "/home/user/Pictures",
+  "videos": "/home/user/Videos",
+  "musics": "/home/user/Music",
+  "documents": "/home/user/Documents"
+}
+```
 
 ## Licença
 
-Este projeto está licenciado sob a [MIT License](LICENSE).
-
-## Autores
-
-- [jaimecabrito01](https://github.com/jaimecabrito01)
-
+MIT
